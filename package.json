@@ -1,0 +1,46 @@
+{
+  "name": "btc-script-lab",
+  "version": "1.0.0",
+  "description": "Bitcoin Script Learning Lab - Hands-on experimentation with Bitcoin Script on testnet",
+  "main": "scripts/multisig.js",
+  "scripts": {
+    "multisig": "node scripts/multisig.js",
+    "timelock": "node scripts/timelock.js",
+    "escrow": "node scripts/escrow.js",
+    "hashlock": "node scripts/hashlock.js",
+    "segwit": "node scripts/segwit.js",
+    "miniscript": "node scripts/miniscript.js",
+    "all": "npm run multisig && echo '\n---' && npm run timelock && echo '\n---' && npm run escrow && echo '\n---' && npm run hashlock && echo '\n---' && npm run segwit && echo '\n---' && npm run miniscript",
+    "install-deps": "npm install bitcoinjs-lib",
+    "build": "echo 'Building Bitcoin Script Learning Lab...'",
+    "start": "cd frontend && node server.js",
+    "dev": "cd frontend && node server.js"
+  },
+  "keywords": [
+    "bitcoin",
+    "script",
+    "multisig",
+    "timelock",
+    "escrow",
+    "hashlock",
+    "testnet",
+    "learning",
+    "education"
+  ],
+  "author": "Bitcoin Script Lab",
+  "license": "MIT",
+  "dependencies": {
+    "bitcoinjs-lib": "^6.1.5"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/btc-script-lab.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-username/btc-script-lab/issues"
+  },
+  "homepage": "https://github.com/your-username/btc-script-lab#readme"
+}

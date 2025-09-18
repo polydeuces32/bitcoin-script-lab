@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bitcoin Script Learning Lab</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <style>
+        /* Bloomberg Terminal Dark Theme */
+        body {
+            background-color: #0a0a0a;
+            color: #00ff00;
+            font-family: 'Courier New', 'Monaco', monospace;
+        }
+        
+        .container-fluid {
+            background-color: #0a0a0a;
+        }
+        
+        .jumbotron {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            border: 1px solid #333;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.1);
+        }
+        
+        .card {
+            background-color: #1a1a1a;
+            border: 1px solid #333;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.05);
+        }
+        
+        .card-header {
+            background: linear-gradient(90deg, #2d2d2d 0%, #1a1a1a 100%);
+            border-bottom: 1px solid #333;
+        }
+        
+        .card-body {
+            background-color: #1a1a1a;
+            color: #00ff00;
+        }
+        
+        .script-output {
+            background-color: #0d1117;
+            border: 1px solid #333;
+            border-radius: 0.375rem;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: #00ff00;
+            box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.1);
+        }
+        
+        .address-output {
+            background-color: #0d1117;
+            border: 1px solid #00ff00;
+            border-radius: 0.375rem;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            word-break: break-all;
+            color: #00ff00;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
+        }
+        
+        .key-output {
+            background-color: #0d1117;
+            border: 1px solid #ffaa00;
+            border-radius: 0.375rem;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            word-break: break-all;
+            color: #ffaa00;
+            box-shadow: 0 0 10px rgba(255, 170, 0, 0.2);
+        }
+        
+        .explanation {
+            background-color: #0d1117;
+            border-left: 4px solid #00ff00;
+            padding: 1rem;
+            margin: 1rem 0;
+            color: #00ff00;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.1);
+        }
+        
+        .opcode {
+            background-color: #333;
+            padding: 0.2rem 0.4rem;
+            border-radius: 0.25rem;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            color: #00ff00;
+            border: 1px solid #555;
+        }
+        
+        .step {
+            margin-bottom: 2rem;
+            padding: 1rem;
+            border: 1px solid #333;
+            border-radius: 0.375rem;
+            background-color: #1a1a1a;
+            color: #00ff00;
+        }
+        
+        .step h4 {
+            color: #00ff00;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+        }
+        
+        .form-control {
+            background-color: #0d1117;
+            border: 1px solid #333;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .form-control:focus {
+            background-color: #0d1117;
+            border-color: #00ff00;
+            color: #00ff00;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+        }
+        
+        .form-label {
+            color: #00ff00;
+            font-weight: bold;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #00ff00, #00cc00);
+            border: 1px solid #00ff00;
+            color: #000;
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(45deg, #00cc00, #00ff00);
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(45deg, #333, #555);
+            border: 1px solid #666;
+            color: #00ff00;
+        }
+        
+        .btn-success {
+            background: linear-gradient(45deg, #00ff00, #00cc00);
+            border: 1px solid #00ff00;
+            color: #000;
+        }
+        
+        .btn-warning {
+            background: linear-gradient(45deg, #ffaa00, #ff8800);
+            border: 1px solid #ffaa00;
+            color: #000;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(45deg, #ff0000, #cc0000);
+            border: 1px solid #ff0000;
+            color: #fff;
+        }
+        
+        .btn-info {
+            background: linear-gradient(45deg, #00ffff, #00cccc);
+            border: 1px solid #00ffff;
+            color: #000;
+        }
+        
+        .text-success {
+            color: #00ff00 !important;
+        }
+        
+        .text-warning {
+            color: #ffaa00 !important;
+        }
+        
+        .text-danger {
+            color: #ff0000 !important;
+        }
+        
+        .text-info {
+            color: #00ffff !important;
+        }
+        
+        /* Terminal-style scrollbars */
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 6px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        
+        /* Glowing effects */
+        .glow {
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(0, 255, 0, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(0, 255, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 255, 0, 0); }
+        }
+        
+        /* Terminal cursor effect */
+        .terminal-cursor::after {
+            content: '_';
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+        
+        /* Terminal status display */
+        .terminal-status {
+            background-color: #0d1117;
+            border: 1px solid #333;
+            padding: 1rem;
+            border-radius: 0.375rem;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .status-line {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .status-label {
+            color: #666;
+            font-weight: bold;
+        }
+        
+        .status-value {
+            font-weight: bold;
+            text-shadow: 0 0 5px currentColor;
+        }
+        
+        /* Matrix-style background effect */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(0, 255, 0, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(255, 0, 255, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        /* Market Data Dashboard Styles */
+        .market-card {
+            background-color: #0d1117;
+            border: 1px solid #333;
+            border-radius: 0.375rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .market-card:hover {
+            border-color: #00ff00;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.2);
+        }
+        
+        .market-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #00ff00;
+            margin: 0.5rem 0;
+            text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+        }
+        
+        .market-change {
+            font-size: 1rem;
+            font-weight: bold;
+            margin: 0.25rem 0;
+        }
+        
+        .market-label {
+            font-size: 0.8rem;
+            color: #666;
+            margin: 0.25rem 0;
+        }
+        
+        .adoption-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .metric-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem;
+            background-color: #0d1117;
+            border: 1px solid #333;
+            border-radius: 0.25rem;
+        }
+        
+        .metric-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .metric-value {
+            color: #00ff00;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        
+        .market-status {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.5rem;
+            background-color: #0d1117;
+            border: 1px solid #333;
+            border-radius: 0.25rem;
+        }
+        
+        .status-indicator {
+            font-size: 1.2rem;
+            animation: pulse 2s infinite;
+        }
+        
+        .status-text {
+            color: #00ff00;
+            font-weight: bold;
+        }
+        
+        .last-update {
+            color: #666;
+            font-size: 0.9rem;
+            margin-left: auto;
+        }
+        
+        .text-success {
+            color: #00ff00 !important;
+        }
+        
+        .text-danger {
+            color: #ff0000 !important;
+        }
+        
+        .text-warning {
+            color: #ffaa00 !important;
+        }
+        
+        .text-primary {
+            color: #00ffff !important;
+        }
+        
+        .text-info {
+            color: #00ffff !important;
+        }
+        
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .container-fluid {
+                padding: 0.5rem;
+            }
+            
+            .jumbotron {
+                padding: 1rem;
+                margin-bottom: 1rem;
+            }
+            
+            .jumbotron h1 {
+                font-size: 1.5rem;
+            }
+            
+            .jumbotron .lead {
+                font-size: 1rem;
+            }
+            
+            .card {
+                margin-bottom: 1rem;
+            }
+            
+            .market-card {
+                margin-bottom: 0.5rem;
+            }
+            
+            .adoption-metrics {
+                grid-template-columns: 1fr;
+            }
+            
+            .metric-item {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .status-line {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .btn {
+                width: 100%;
+                margin-bottom: 0.5rem;
+            }
+            
+            .form-control {
+                font-size: 16px; /* Prevent zoom on iOS */
+            }
+            
+            .script-output, .address-output, .key-output {
+                font-size: 0.8rem;
+                padding: 0.5rem;
+            }
+            
+            .opcode {
+                font-size: 0.8rem;
+                padding: 0.1rem 0.3rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .jumbotron h1 {
+                font-size: 1.25rem;
+            }
+            
+            .display-4 {
+                font-size: 1.5rem;
+            }
+            
+            .market-value {
+                font-size: 1.2rem;
+            }
+            
+            .metric-value {
+                font-size: 1rem;
+            }
+            
+            .card-body {
+                padding: 0.75rem;
+            }
+            
+            .step {
+                padding: 0.75rem;
+                margin-bottom: 1rem;
+            }
+        }
+        
+        /* Quiz System Styles */
+        .quiz-selection {
+            text-align: center;
+        }
+        
+        .quiz-levels {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .quiz-level-card {
+            background-color: #0d1117;
+            border: 1px solid #333;
+            border-radius: 0.375rem;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .quiz-level-card:hover {
+            border-color: #00ff00;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.2);
+        }
+        
+        .quiz-level-card h5 {
+            color: #00ff00;
+            margin-bottom: 1rem;
+        }
+        
+        .question-count {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .quiz-question {
+            margin-bottom: 2rem;
+        }
+        
+        .question-text {
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            color: #00ff00;
+        }
+        
+        .quiz-options {
+            margin-bottom: 2rem;
+        }
+        
+        .quiz-option {
+            background-color: #0d1117;
+            border: 1px solid #333;
+            border-radius: 0.25rem;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .quiz-option:hover {
+            border-color: #555;
+        }
+        
+        .quiz-option.selected {
+            border-color: #00ff00;
+            background-color: rgba(0, 255, 0, 0.1);
+        }
+        
+        .quiz-option input[type="radio"] {
+            margin-right: 0.5rem;
+        }
+        
+        .quiz-option label {
+            cursor: pointer;
+            margin: 0;
+            color: #00ff00;
+        }
+        
+        .quiz-actions {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .quiz-progress {
+            margin-top: 1rem;
+        }
+        
+        .progress {
+            height: 8px;
+            background-color: #333;
+            border-radius: 4px;
+        }
+        
+        .progress-bar {
+            background: linear-gradient(90deg, #00ff00, #00cc00);
+            border-radius: 4px;
+        }
+        
+        .quiz-feedback {
+            text-align: center;
+        }
+        
+        .feedback-header.correct {
+            color: #00ff00;
+        }
+        
+        .feedback-header.incorrect {
+            color: #ff0000;
+        }
+        
+        .feedback-content {
+            margin: 1.5rem 0;
+            text-align: left;
+        }
+        
+        .correct-answer {
+            background-color: rgba(0, 255, 0, 0.1);
+            border: 1px solid #00ff00;
+            border-radius: 0.25rem;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .quiz-results {
+            text-align: center;
+        }
+        
+        .score-display {
+            margin: 2rem 0;
+        }
+        
+        .score-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00ff00, #00cc00);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+        }
+        
+        .score-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #000;
+        }
+        
+        .score-text {
+            color: #00ff00;
+            font-size: 1.1rem;
+        }
+        
+        .results-message {
+            margin: 1.5rem 0;
+            font-size: 1.1rem;
+        }
+        
+        /* Quick Examples Styles */
+        .quick-examples {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.25rem;
+            margin-bottom: 1rem;
+        }
+        
+        .quick-examples .btn {
+            font-size: 0.8rem;
+            padding: 0.25rem 0.5rem;
+            border: 1px solid #00ff00;
+            color: #00ff00;
+            background-color: transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .quick-examples .btn:hover {
+            background-color: #00ff00;
+            color: #000;
+            border-color: #00ff00;
+        }
+        
+        .quick-examples .btn:active {
+            background-color: #00cc00;
+            border-color: #00cc00;
+        }
+        
+        @media (max-width: 768px) {
+            .quick-examples {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Application Cards */
+        .application-card {
+            background-color: #0d1117;
+            border: 1px solid #333;
+            border-radius: 0.375rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .application-card:hover {
+            border-color: #00ff00;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.1);
+        }
+        
+        .application-card h6 {
+            color: #00ff00;
+            margin-bottom: 0.5rem;
+        }
+        
+        .application-card p {
+            color: #ccc;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Header -->
+            <div class="col-12">
+                <div class="jumbotron p-4 mb-4 glow">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h1 class="display-4 terminal-cursor">Bitcoin Script Learning Lab</h1>
+                            <p class="lead">Hands-on experimentation with Bitcoin Script on testnet</p>
+                            <p class="mb-0">Learn by building real transactions instead of just reading about them</p>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <div class="terminal-status">
+                                <div class="status-line">
+                                    <span class="status-label">STATUS:</span>
+                                    <span class="status-value text-success">ONLINE</span>
+                                </div>
+                                <div class="status-line">
+                                    <span class="status-label">NETWORK:</span>
+                                    <span class="status-value text-info">TESTNET</span>
+                                </div>
+                                <div class="status-line">
+                                    <span class="status-label">MODE:</span>
+                                    <span class="status-value text-warning">LEARNING</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Script Generator -->
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h3 class="card-title mb-0">Script Generator</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="script-type" class="form-label">Select Script Type:</label>
+                            <select class="form-select" id="script-type">
+                                <option value="multisig">2-of-2 Multisig</option>
+                                <option value="timelock">Timelock (CLTV)</option>
+                                <option value="escrow">Escrow (2-of-3)</option>
+                                <option value="hashlock">Hash Lock (HTLC)</option>
+                                <option value="segwit">SegWit (P2WPKH/P2WSH)</option>
+                                <option value="miniscript">Miniscript</option>
+                                <option value="lightning">Lightning Network</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <button class="btn btn-primary" onclick="generateScript()">Generate Script</button>
+                            <button class="btn btn-secondary" onclick="clearOutput()">Clear</button>
+                        </div>
+
+                        <div id="script-output" class="script-output" style="display: none;">
+                            <h5>Generated Script:</h5>
+                            <div id="script-content"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Script Explanation -->
+                <div class="card mt-3" id="explanation-card" style="display: none;">
+                    <div class="card-header bg-info text-white">
+                        <h4 class="card-title mb-0">Script Explanation</h4>
+                    </div>
+                    <div class="card-body">
+                        <div id="script-explanation"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transaction Builder -->
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h3 class="card-title mb-0">Transaction Builder</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="from-address" class="form-label">From Address (P2SH):</label>
+                            <input type="text" class="form-control" id="from-address" placeholder="Generated from script above">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="to-address" class="form-label">To Address:</label>
+                            <input type="text" class="form-control" id="to-address" placeholder="Enter recipient address">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="amount" class="form-label">Amount (satoshi):</label>
+                            <input type="number" class="form-control" id="amount" placeholder="100000">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="private-keys" class="form-label">Private Keys (WIF format, one per line):</label>
+                            <textarea class="form-control" id="private-keys" rows="3" placeholder="Generated from script above"></textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <button class="btn btn-success" onclick="buildTransaction()">Build Transaction</button>
+                            <button class="btn btn-warning" onclick="signTransaction()">Sign Transaction</button>
+                        </div>
+
+                        <div id="transaction-output" class="script-output" style="display: none;">
+                            <h5>Transaction:</h5>
+                            <div id="transaction-content"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Testnet Guide -->
+                <div class="card mt-3">
+                    <div class="card-header bg-warning text-dark">
+                        <h4 class="card-title mb-0">Testnet Guide</h4>
+                    </div>
+                    <div class="card-body">
+                        <h6>1. Get Testnet Coins:</h6>
+                        <p><a href="https://testnet-faucet.mempool.co/" target="_blank" class="btn btn-sm btn-outline-primary">Testnet Faucet</a></p>
+                        
+                        <h6>2. Check Your Address:</h6>
+                        <p><a href="https://blockstream.info/testnet/" target="_blank" class="btn btn-sm btn-outline-primary">Testnet Explorer</a></p>
+                        
+                        <h6>3. Broadcast Transaction:</h6>
+                        <p><a href="https://blockstream.info/testnet/tx/push" target="_blank" class="btn btn-sm btn-outline-primary">Broadcast TX</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Script Generator -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h3 class="card-title mb-0">🤖 AI Script Generator</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <label for="ai-description" class="form-label">Describe the script you want to create:</label>
+                                    <textarea class="form-control" id="ai-description" rows="3" 
+                                        placeholder="e.g., 'Create a 2-of-3 multisig for shared custody' or 'Make a timelock script that locks funds for 24 hours'"></textarea>
+                                </div>
+                                <button class="btn btn-success" onclick="generateAIScript()">Generate Script</button>
+                                <button class="btn btn-secondary" onclick="clearAIScript()">Clear</button>
+                            </div>
+                            <div class="col-md-4">
+                                <h6>Quick Examples:</h6>
+                                <div class="quick-examples">
+                                    <button class="btn btn-outline-success btn-sm mb-1" onclick="setAIScript('Create a 2-of-3 multisig for escrow')">Escrow Multisig</button>
+                                    <button class="btn btn-outline-success btn-sm mb-1" onclick="setAIScript('Make a timelock script that locks funds for 7 days')">7-Day Timelock</button>
+                                    <button class="btn btn-outline-success btn-sm mb-1" onclick="setAIScript('Create a hash lock script for atomic swaps')">Atomic Swap</button>
+                                    <button class="btn btn-outline-success btn-sm mb-1" onclick="setAIScript('Create a Lightning Network payment channel script')">Lightning Channel</button>
+                                    <button class="btn btn-outline-success btn-sm mb-1" onclick="setAIScript('Make a vault script with recovery')">Vault Script</button>
+                                    <button class="btn btn-outline-success btn-sm mb-1" onclick="setAIScript('Create a DAO voting script')">DAO Voting</button>
+                                    <button class="btn btn-outline-success btn-sm mb-1" onclick="setAIScript('Make an insurance payout script')">Insurance</button>
+                                    <button class="btn btn-outline-success btn-sm mb-1" onclick="setAIScript('Create an inheritance script')">Inheritance</button>
+                                    <button class="btn btn-outline-success btn-sm mb-1" onclick="setAIScript('Make a subscription payment script')">Subscription</button>
+                                    <button class="btn btn-outline-success btn-sm mb-1" onclick="setAIScript('Create a vesting schedule script')">Vesting</button>
+                                </div>
+                                
+                                <h6 class="mt-3">More Examples:</h6>
+                                <ul class="list-unstyled">
+                                    <li>• "Escrow with time release"</li>
+                                    <li>• "Multi-signature with timelock"</li>
+                                    <li>• "Atomic swap with both parties"</li>
+                                    <li>• "Lightning channel with penalty"</li>
+                                    <li>• "Conditional payment script"</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div id="ai-script-output" class="script-output mt-3" style="display: none;">
+                            <h5>Generated Script:</h5>
+                            <div id="ai-script-content"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Script Categories -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-info text-white">
+                        <h3 class="card-title mb-0">📚 Script Categories & Use Cases</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <h5>🔐 Security & Custody</h5>
+                                <ul class="list-unstyled">
+                                    <li>• <strong>Multisig:</strong> Shared custody, corporate funds</li>
+                                    <li>• <strong>Vault:</strong> Recovery mechanisms, emergency access</li>
+                                    <li>• <strong>Timelock:</strong> Time-based spending restrictions</li>
+                                    <li>• <strong>Inheritance:</strong> Estate planning, will execution</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-4">
+                                <h5>💼 Business & Finance</h5>
+                                <ul class="list-unstyled">
+                                    <li>• <strong>Escrow:</strong> Dispute resolution, online purchases</li>
+                                    <li>• <strong>Insurance:</strong> Payout mechanisms, claims processing</li>
+                                    <li>• <strong>Subscription:</strong> Recurring payments, service access</li>
+                                    <li>• <strong>Vesting:</strong> Employee compensation, gradual unlock</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-4">
+                                <h5>⚡ Advanced & DeFi</h5>
+                                <ul class="list-unstyled">
+                                    <li>• <strong>Lightning:</strong> Micropayments, off-chain scaling</li>
+                                    <li>• <strong>Hash Lock:</strong> Atomic swaps, cross-chain</li>
+                                    <li>• <strong>DAO:</strong> Governance, voting mechanisms</li>
+                                    <li>• <strong>Conditional:</strong> Smart contracts, automated logic</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <h5>🎯 Real-World Applications</h5>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="application-card">
+                                            <h6>🏦 Banking & Finance</h6>
+                                            <p>Multisig for corporate treasuries, timelock for loan collateral, escrow for international trade</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="application-card">
+                                            <h6>🏢 Enterprise & Governance</h6>
+                                            <p>DAO voting for corporate decisions, vesting for employee stock, inheritance for succession planning</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="application-card">
+                                            <h6>🛒 E-commerce & Payments</h6>
+                                            <p>Escrow for online purchases, subscription for recurring services, Lightning for instant payments</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="application-card">
+                                            <h6>🔗 DeFi & Cross-chain</h6>
+                                            <p>Hash locks for atomic swaps, conditional payments for automated trading, Lightning for micro-transactions</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interactive Visualizations -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-info text-white">
+                        <h3 class="card-title mb-0">Interactive Visualizations</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5>Script Execution Simulator</h5>
+                                <p>Watch how Bitcoin Script executes step by step</p>
+                                <div id="script-simulator"></div>
+                                <button class="btn btn-sm btn-primary" onclick="startScriptSimulation()">Start Simulation</button>
+                                <button class="btn btn-sm btn-secondary" onclick="resetScriptSimulation()">Reset</button>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>Transaction Flow</h5>
+                                <p>See how transactions flow through the Bitcoin network</p>
+                                <div id="transaction-flow"></div>
+                                <button class="btn btn-sm btn-success" onclick="startTransactionFlow()">Start Flow</button>
+                                <button class="btn btn-sm btn-secondary" onclick="resetTransactionFlow()">Reset</button>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <h5>Key Generation Visualization</h5>
+                                <p>Watch cryptographic keys being generated</p>
+                                <div id="key-generation"></div>
+                                <button class="btn btn-sm btn-warning" onclick="startKeyGeneration()">Generate Keys</button>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>Multisig Visualization</h5>
+                                <p>See how multiple signatures work together</p>
+                                <div id="multisig-viz"></div>
+                                <button class="btn btn-sm btn-danger" onclick="startMultisigViz()">Show Multisig</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Learning Steps -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-dark text-white">
+                        <h3 class="card-title mb-0">Learning Steps</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="step">
+                                    <h4>1. Generate Script</h4>
+                                    <p>Select a script type and generate a Bitcoin Script with address and private keys.</p>
+                                    <ul>
+                                        <li>Multisig for shared custody</li>
+                                        <li>Timelock for time-based spending</li>
+                                        <li>Escrow for dispute resolution</li>
+                                        <li>Hash lock for atomic swaps</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="step">
+                                    <h4>2. Fund Address</h4>
+                                    <p>Send testnet coins to your generated address using a testnet faucet.</p>
+                                    <ul>
+                                        <li>Use the testnet faucet link</li>
+                                        <li>Wait for confirmation</li>
+                                        <li>Check balance on explorer</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="step">
+                                    <h4>3. Spend Funds</h4>
+                                    <p>Create and sign a transaction spending from your script address.</p>
+                                    <ul>
+                                        <li>Build transaction with recipient</li>
+                                        <li>Sign with private keys</li>
+                                        <li>Broadcast to testnet</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interactive Quiz System -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-danger text-white">
+                        <h3 class="card-title mb-0">🧠 Interactive Quiz System</h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="quiz-container">
+                            <!-- Quiz content will be dynamically loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Advanced Visualizations -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-warning text-dark">
+                        <h3 class="card-title mb-0">Advanced Visualizations</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5>Blockchain Visualization</h5>
+                                <p>See how blocks are created and connected</p>
+                                <div id="blockchain-viz"></div>
+                                <button class="btn btn-sm btn-primary" onclick="startBlockchainViz()">Start Animation</button>
+                                <button class="btn btn-sm btn-secondary" onclick="resetBlockchainViz()">Reset</button>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>Script Debugger</h5>
+                                <p>Step through script execution with breakpoints</p>
+                                <div id="script-debugger"></div>
+                                <button class="btn btn-sm btn-success" onclick="startScriptDebugger()">Start Debug</button>
+                                <button class="btn btn-sm btn-secondary" onclick="resetScriptDebugger()">Reset</button>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <h5>Cryptographic Operations</h5>
+                                <p>Visualize key generation and signatures</p>
+                                <div id="cryptographic-viz"></div>
+                                <button class="btn btn-sm btn-warning" onclick="startCryptographicViz()">Start Generation</button>
+                                <button class="btn btn-sm btn-secondary" onclick="resetCryptographicViz()">Reset</button>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>Network Visualization</h5>
+                                <p>See how transactions propagate through the network</p>
+                                <div id="network-viz"></div>
+                                <button class="btn btn-sm btn-danger" onclick="startNetworkViz()">Start Network</button>
+                                <button class="btn btn-sm btn-secondary" onclick="resetNetworkViz()">Reset</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Script Types Reference -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-secondary text-white">
+                        <h3 class="card-title mb-0">Script Types Reference</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5>Multisig</h5>
+                                <p><span class="opcode">OP_2 &lt;pubkey1&gt; &lt;pubkey2&gt; OP_2 OP_CHECKMULTISIG</span></p>
+                                <p>Requires 2 signatures from 2 public keys. Used for shared custody and security.</p>
+                                
+                                <h5>Timelock</h5>
+                                <p><span class="opcode">&lt;locktime&gt; OP_CHECKLOCKTIMEVERIFY OP_DROP &lt;pubkey&gt; OP_CHECKSIG</span></p>
+                                <p>Funds locked until specified time. Used for time-based releases and escrow.</p>
+                                
+                                <h5>Escrow</h5>
+                                <p><span class="opcode">OP_2 &lt;buyer&gt; &lt;seller&gt; &lt;arbitrator&gt; OP_3 OP_CHECKMULTISIG</span></p>
+                                <p>2-of-3 multisig for dispute resolution. Any 2 parties can spend.</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>Hash Lock</h5>
+                                <p><span class="opcode">OP_SHA256 &lt;hash&gt; OP_EQUALVERIFY &lt;pubkey&gt; OP_CHECKSIG</span></p>
+                                <p>Requires knowledge of secret (preimage). Used for atomic swaps and Lightning Network.</p>
+                                
+                                <h5>SegWit</h5>
+                                <p><span class="opcode">OP_0 &lt;witness_program&gt;</span></p>
+                                <p>Witness data separated from transaction data. More efficient and enables Lightning Network.</p>
+                                
+                                <h5>Miniscript</h5>
+                                <p><span class="opcode">or_b(pk(Alice), and_b(pk(Bob), pk(Charlie)))</span></p>
+                                <p>Composable spending conditions. Alice OR (Bob AND Charlie) can spend.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script src="script-lab.js"></script>
+    <script src="visualizations.js"></script>
+    <script src="advanced-visualizations.js"></script>
+    <script src="market-data.js"></script>
+    <script src="ai-script-generator.js"></script>
+    <script src="quiz-system.js"></script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+{
+  "name": "bitcoin-script-lab-frontend",
+  "version": "1.0.0",
+  "description": "Frontend for Bitcoin Script Learning Lab",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "bitcoin",
+    "script",
+    "frontend",
+    "learning",
+    "education"
+  ],
+  "author": "Bitcoin Script Lab",
+  "license": "MIT",
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
