@@ -278,6 +278,25 @@ function generateScript() {
         // Populate transaction builder
         document.getElementById('from-address').value = script.address;
         document.getElementById('private-keys').value = script.keys.map(k => k.wif).join('\n');
+        
+        // Notify testnet helper of new address
+        if (window.testnetHelper) {
+            window.testnetHelper.updateAddress(script.address);
+        }
+        
+        // Dispatch event for testnet helper
+        const event = new CustomEvent('scriptGenerated', {
+            detail: {
+                type: script.type,
+                address: script.address,
+                script: script.script,
+                keys: script.keys
+            }
+        });
+        document.dispatchEvent(event);
+        
+        // Show success notification
+        showNotification(`Script generated! Address: ${script.address.substring(0, 20)}...`, 'success');
     }
 }
 
@@ -289,6 +308,25 @@ function clearOutput() {
     document.getElementById('private-keys').value = '';
     scriptLab.currentScript = null;
     scriptLab.currentKeys = [];
+}
+
+// Notification function
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+    notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    notification.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" onclick="this.parentElement.remove()"></button>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        if (notification.parentElement) {
+            notification.remove();
+        }
+    }, 3000);
 }
 
 function buildTransaction() {

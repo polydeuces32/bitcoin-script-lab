@@ -1173,20 +1173,61 @@
                     </div>
                 </div>
 
-                <!-- Testnet Guide -->
+                <!-- Enhanced Testnet Guide -->
                 <div class="card mt-3">
                     <div class="card-header bg-warning text-dark">
-                        <h4 class="card-title mb-0">Testnet Guide</h4>
+                        <h4 class="card-title mb-0">🪙 Enhanced Testnet Guide</h4>
                     </div>
                     <div class="card-body">
-                        <h6>1. Get Testnet Coins:</h6>
-                        <p><a href="https://testnet-faucet.mempool.co/" target="_blank" class="btn btn-sm btn-outline-primary">Testnet Faucet</a></p>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <h6>1. Get Testnet Coins:</h6>
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-sm btn-success" onclick="openFaucet('coinfaucet')">
+                                        <i class="fas fa-coins"></i> CoinFaucet
+                                    </button>
+                                    <button class="btn btn-sm btn-success" onclick="openFaucet('blockstream')">
+                                        <i class="fas fa-coins"></i> Blockstream
+                                    </button>
+                                    <button class="btn btn-sm btn-success" onclick="openFaucet('mempool')">
+                                        <i class="fas fa-coins"></i> Mempool
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <h6>2. Check Your Address:</h6>
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-sm btn-primary" onclick="checkAddress('blockstream')">
+                                        <i class="fas fa-search"></i> Blockstream
+                                    </button>
+                                    <button class="btn btn-sm btn-primary" onclick="checkAddress('mempool')">
+                                        <i class="fas fa-search"></i> Mempool
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <h6>3. Broadcast Transaction:</h6>
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-sm btn-warning" onclick="openBroadcast()">
+                                        <i class="fas fa-broadcast-tower"></i> Broadcast TX
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                         
-                        <h6>2. Check Your Address:</h6>
-                        <p><a href="https://blockstream.info/testnet/" target="_blank" class="btn btn-sm btn-outline-primary">Testnet Explorer</a></p>
-                        
-                        <h6>3. Broadcast Transaction:</h6>
-                        <p><a href="https://blockstream.info/testnet/tx/push" target="_blank" class="btn btn-sm btn-outline-primary">Broadcast TX</a></p>
+                        <div class="mt-3">
+                            <div class="alert alert-info">
+                                <small>
+                                    <strong>Quick Start:</strong><br>
+                                    1. Generate a script above to get an address<br>
+                                    2. Use the buttons above to get testnet coins<br>
+                                    3. Check your address balance<br>
+                                    4. Test spending from your script
+                                </small>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1688,6 +1729,7 @@
     <script src="script-editor.js"></script>
     <script src="transaction-simulator.js"></script>
     <script src="script-library.js"></script>
+    <script src="testnet-helper.js"></script>
     <script src="visualizations.js"></script>
     <script src="advanced-visualizations.js"></script>
     <script src="market-data.js"></script>
